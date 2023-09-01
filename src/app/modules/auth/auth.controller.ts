@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
-import catchAsync from '../../../shared/catchAsync';
-import { AuthService } from './auth.service';
-import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
 import config from '../../../config';
+import catchAsync from '../../../shared/catchAsync';
+import sendResponse from '../../../shared/sendResponse';
+import { AuthService } from './auth.service';
 
 const createUser: RequestHandler = catchAsync(async (req, res) => {
   const result = await AuthService.sihgup(req.body);
@@ -20,7 +20,7 @@ const createUser: RequestHandler = catchAsync(async (req, res) => {
 const loginUser: RequestHandler = catchAsync(async (req, res) => {
   const { ...loginData } = req.body;
   const result = await AuthService.loginUser(loginData);
-  const { refreshToken, ...others } = result;
+  const { refreshToken, token } = result;
 
   //set refresh token into cookie
 
@@ -31,11 +31,11 @@ const loginUser: RequestHandler = catchAsync(async (req, res) => {
 
   res.cookie('refreshToken', refreshToken, cookieOptions);
 
-  sendResponse(res, {
+  res.send({
     statusCode: 200,
     success: true,
     message: 'User signin successfully!',
-    data: others,
+    token,
   });
 });
 
