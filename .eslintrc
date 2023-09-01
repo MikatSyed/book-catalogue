@@ -11,7 +11,7 @@
     "prettier"
   ],
   "rules": {
-    "no-unused-vars": "error",
+
     "prefer-const": "error",
     "no-unused-expressions": "error",
     "no-undef": "error",
