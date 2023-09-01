@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 
+import { User } from '@prisma/client';
 import prisma from '../../../shared/prisma';
 import { IResponseUser } from './user.interface';
 
@@ -18,38 +19,16 @@ const getAllFromDB = async (): Promise<Partial<IResponseUser[]>> => {
   return result;
 };
 
-// const getByIdFromDB = async (id: string): Promise<Building | null> => {
-//     const result = await prisma.building.findUnique({
-//         where: {
-//             id
-//         }
-//     });
-//     return result;
-// };
-
-// const updateOneInDB = async (id: string, payload: Partial<Building>): Promise<Building> => {
-//     const result = await prisma.building.update({
-//         where: {
-//             id
-//         },
-//         data: payload
-//     });
-//     return result;
-// };
-
-// const deleteByIdFromDB = async (id: string): Promise<Building> => {
-//     const result = await prisma.building.delete({
-//         where: {
-//             id
-//         }
-//     });
-//     return result;
-// };
+const getByIdFromDB = async (id: string): Promise<User | null> => {
+  const result = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
 
 export const UserService = {
-  // insertIntoDB,
   getAllFromDB,
-  // getByIdFromDB,
-  // updateOneInDB,
-  // deleteByIdFromDB
+  getByIdFromDB,
 };
