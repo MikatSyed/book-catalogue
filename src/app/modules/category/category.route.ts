@@ -16,4 +16,16 @@ router.post(
 router.get('/', CategoryController.getAllFromDB);
 router.get('/:id', CategoryController.getByIdFromDB);
 
+router.patch(
+  '/:id',
+  validateRequest(CategoryValidation.updateCategoryZodSchema),
+  auth(ENUM_USER_ROLE.ADMIN),
+  CategoryController.updateOneInDB
+);
+router.delete(
+  '/:id',
+  auth(ENUM_USER_ROLE.ADMIN),
+  CategoryController.deleteByIdFromDB
+);
+
 export const CategoryRoutes = router;
