@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import catchAsync from '../../../shared/catchAsync';
-import { CategoryService } from './category.service';
 import sendResponse from '../../../shared/sendResponse';
+import { CategoryService } from './category.service';
 
 const insertIntoDB: RequestHandler = catchAsync(async (req, res) => {
   const result = await CategoryService.insertIntoDB(req.body);
@@ -14,6 +14,31 @@ const insertIntoDB: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const getAllFromDB: RequestHandler = catchAsync(async (req, res) => {
+  const result = await CategoryService.getAllFromDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Categories fetched successfully',
+    data: result,
+  });
+});
+
+const getByIdFromDB: RequestHandler = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await CategoryService.getByIdFromDB(id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Category fetched successfully',
+    data: result,
+  });
+});
+
 export const CategoryController = {
   insertIntoDB,
+  getAllFromDB,
+  getByIdFromDB,
 };
