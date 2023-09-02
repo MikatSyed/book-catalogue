@@ -128,7 +128,49 @@ const getAllFromDB = async (
   };
 };
 
+const getByCategoryIdFromDB = async (
+  categoryId: string,
+  options: IPaginationOptions
+): Promise<IGenericResponse<Book[]>> => {
+  const { page, limit } = queryHelpers.calculatePagination(options);
+  const result = await prisma.book.findMany({
+    where: {
+      categoryId,
+    },
+    include: {
+      category: true,
+    },
+  });
+
+  const total = await prisma.book.count({
+    where: {
+      category: {
+        id: categoryId,
+      },
+    },
+  });
+
+  // Calculate the total number of pages
+  const totalPage = Math.ceil(total / limit);
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+
+  // Slice the result array based on startIndex and endIndex
+  const paginatedResult = result.slice(startIndex, endIndex);
+  return {
+    meta: {
+      total,
+      page,
+      size: limit,
+      totalPage,
+    },
+    data: paginatedResult, // Return paginated data
+  };
+};
+
 export const BookService = {
   insertIntoDB,
   getAllFromDB,
+  getByCategoryIdFromDB,
 };

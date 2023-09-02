@@ -30,7 +30,24 @@ const getAllFromDB: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const getByCategoryIdFromDB: RequestHandler = catchAsync(async (req, res) => {
+  const { categoryId } = req.params;
+  const queryOptions = pick(req.query, queryFields);
+  const result = await BookService.getByCategoryIdFromDB(
+    categoryId,
+    queryOptions
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Books with associated category data fetched successfully',
+    data: result,
+  });
+});
+
 export const BookController = {
   insertIntoDB,
   getAllFromDB,
+  getByCategoryIdFromDB,
 };
