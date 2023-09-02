@@ -16,4 +16,19 @@ router.get('/', BookController.getAllFromDB);
 
 router.get('/:categoryId/category', BookController.getByCategoryIdFromDB);
 
+router.get('/:id', BookController.getByIdFromDB);
+
+router.patch(
+  '/:id',
+  validateRequest(BookValidation.updateBookZodSchema),
+  auth(ENUM_USER_ROLE.ADMIN),
+  BookController.updateOneInDB
+);
+
+router.delete(
+  '/:id',
+  auth(ENUM_USER_ROLE.ADMIN),
+  BookController.deleteByIdFromDB
+);
+
 export const BookRoutes = router;

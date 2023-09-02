@@ -169,8 +169,54 @@ const getByCategoryIdFromDB = async (
   };
 };
 
+const getByIdFromDB = async (id: string): Promise<Book | null> => {
+  const result = await prisma.book.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      category: true,
+    },
+  });
+  return result;
+};
+
+const updateOneInDB = async (
+  id: string,
+  payload: Partial<Book>
+): Promise<Book> => {
+  const result = await prisma.book.update({
+    where: {
+      id,
+    },
+    data: payload,
+    include: {
+      category: true,
+    },
+  });
+
+  return result;
+};
+
+const deleteByIdFromDB = async (id: string): Promise<Book> => {
+  const result = await prisma.book.delete({
+    where: {
+      id,
+    },
+
+    include: {
+      category: true,
+    },
+  });
+
+  return result;
+};
+
 export const BookService = {
   insertIntoDB,
   getAllFromDB,
   getByCategoryIdFromDB,
+  getByIdFromDB,
+  updateOneInDB,
+  deleteByIdFromDB,
 };
