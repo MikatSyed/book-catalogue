@@ -13,7 +13,7 @@ const createToken = (
 const verifyToken = (token: string, secret: Secret): JwtPayload => {
   return jwt.verify(token, secret) as JwtPayload;
 };
-console.log(verifyToken);
+// console.log(verifyToken);
 
 export const jwtHelpers = {
   createToken,

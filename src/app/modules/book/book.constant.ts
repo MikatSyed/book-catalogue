@@ -1,12 +1,10 @@
-export const bookFilterableFields = ['searchTerm', 'category'];
-export const queryFields = [
-  'limit',
-  'page',
-  'sortBy',
-  'sortOrder',
+export const bookFilterableFields = [
+  'searchTerm',
+  'category',
   'minPrice',
   'maxPrice',
 ];
+export const queryFields = ['limit', 'page', 'sortBy', 'sortOrder'];
 
 export const bookSearchableFields = ['title', 'author', 'genre'];
 

@@ -1,5 +1,7 @@
 // @typescript-eslint/no-explicit-any
 import { Book } from '@prisma/client';
+import httpStatus from 'http-status';
+import ApiError from '../../../errors/ApiError';
 import { queryHelpers } from '../../../helpers/queryHelpers';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
@@ -7,7 +9,6 @@ import prisma from '../../../shared/prisma';
 import {
   bookRelationalFields,
   bookRelationalFieldsMapper,
-  bookSearchableFields,
 } from './book.constant';
 import { IBookFilters } from './book.interface';
 
@@ -25,42 +26,34 @@ const getAllFromDB = async (
   filters: IBookFilters,
   options: IPaginationOptions
 ): Promise<IGenericResponse<Book[]>> => {
-  const { page, limit, minPrice, maxPrice } =
-    queryHelpers.calculatePagination(options);
-  const { searchTerm, ...filterData } = filters;
+  const { page, limit } = queryHelpers.calculatePagination(options);
+  const { searchTerm, minPrice, maxPrice, ...filterData } = filters;
 
   const andConditions = [];
 
   if (searchTerm) {
     andConditions.push({
-      OR: bookSearchableFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive',
-        },
-      })),
+      OR: [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { author: { contains: searchTerm, mode: 'insensitive' } },
+        { genre: { contains: searchTerm, mode: 'insensitive' } },
+      ],
     });
   }
-
-  if (
-    minPrice !== undefined &&
-    !isNaN(minPrice) &&
-    maxPrice !== undefined &&
-    !isNaN(maxPrice)
-  ) {
+  if (typeof minPrice === 'number' && typeof maxPrice === 'number') {
     andConditions.push({
       price: {
         gte: minPrice,
         lte: maxPrice,
       },
     });
-  } else if (minPrice !== undefined && !isNaN(minPrice)) {
+  } else if (typeof minPrice === 'number') {
     andConditions.push({
       price: {
         gte: minPrice,
       },
     });
-  } else if (maxPrice !== undefined && !isNaN(maxPrice)) {
+  } else if (typeof maxPrice === 'number') {
     andConditions.push({
       price: {
         lte: maxPrice,
@@ -134,6 +127,17 @@ const getByCategoryIdFromDB = async (
   options: IPaginationOptions
 ): Promise<IGenericResponse<Book[]>> => {
   const { page, limit } = queryHelpers.calculatePagination(options);
+
+  const isCategoryExist = await prisma.book.findFirst({
+    where: {
+      categoryId,
+    },
+  });
+
+  if (!isCategoryExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Category does not exist');
+  }
+
   const result = await prisma.book.findMany({
     where: {
       categoryId,
@@ -171,6 +175,16 @@ const getByCategoryIdFromDB = async (
 };
 
 const getByIdFromDB = async (id: string): Promise<Book | null> => {
+  const isBookExist = await prisma.book.findFirst({
+    where: {
+      id,
+    },
+  });
+
+  if (!isBookExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Book does not exist');
+  }
+
   const result = await prisma.book.findUnique({
     where: {
       id,
@@ -186,6 +200,16 @@ const updateOneInDB = async (
   id: string,
   payload: Partial<Book>
 ): Promise<Book> => {
+  const isBookExist = await prisma.book.findFirst({
+    where: {
+      id,
+    },
+  });
+
+  if (!isBookExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Book does not exist');
+  }
+
   const result = await prisma.book.update({
     where: {
       id,
@@ -200,6 +224,15 @@ const updateOneInDB = async (
 };
 
 const deleteByIdFromDB = async (id: string): Promise<Book> => {
+  const isBookExist = await prisma.book.findFirst({
+    where: {
+      id,
+    },
+  });
+
+  if (!isBookExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Book does not exist');
+  }
   const result = await prisma.book.delete({
     where: {
       id,

@@ -41,7 +41,6 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
       email,
     },
   });
-  console.log(isUserExist);
 
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
@@ -87,7 +86,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   } catch (err) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
   }
-  console.log(verifiedToken);
+  // console.log(verifiedToken);
   const { userId } = verifiedToken;
 
   // checking deleted user's refresh token
