@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import catchAsync from '../../../shared/catchAsync';
-import { OrderService } from './order.service';
 import sendResponse from '../../../shared/sendResponse';
+import { OrderService } from './order.service';
 
 const postOrder: RequestHandler = catchAsync(async (req, res) => {
-  const user = req.user;
+  const userId = req?.user?.userId;
 
-  const result = await OrderService.postOrder(req.body, user);
+  const result = await OrderService.postOrder(req.body, userId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -16,7 +16,9 @@ const postOrder: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 const getALLOrderFromDB: RequestHandler = catchAsync(async (req, res) => {
-  const result = await OrderService.getALLOrderFromDB();
+  const userId = req?.user?.userId;
+  const role = req?.user?.role;
+  const result = await OrderService.getALLOrderFromDB(userId, role);
 
   sendResponse(res, {
     statusCode: 200,
