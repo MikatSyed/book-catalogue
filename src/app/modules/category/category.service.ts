@@ -1,7 +1,7 @@
 import { Category } from '@prisma/client';
-import prisma from '../../../shared/prisma';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
+import prisma from '../../../shared/prisma';
 
 const insertIntoDB = async (data: Category): Promise<Category> => {
   const result = await prisma.category.create({ data });
@@ -77,15 +77,23 @@ const deleteByIdFromDB = async (id: string): Promise<Category> => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Category does not exist');
   }
 
-  const result = await prisma.category.delete({
-    where: {
-      id,
-    },
-    include: {
-      books: true,
-    },
-  });
+  const result = await prisma.$transaction(async transactionClient => {
+    await transactionClient.book.deleteMany({
+      where: {
+        categoryId: isCategoryExist?.id,
+      },
+    });
 
+    const data = await transactionClient.category.delete({
+      where: {
+        id,
+      },
+      include: {
+        books: true,
+      },
+    });
+    return data;
+  });
   return result;
 };
 
