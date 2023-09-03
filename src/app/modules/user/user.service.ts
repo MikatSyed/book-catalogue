@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-// @typescript-eslint/no-unused-vars
+/* @typescript-eslint/no-unused-vars */
 
 import { User } from '@prisma/client';
 import bcrypt from 'bcrypt';

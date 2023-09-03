@@ -1,3 +1,4 @@
+// @typescript-eslint/no-explicit-any
 import { Book } from '@prisma/client';
 import { queryHelpers } from '../../../helpers/queryHelpers';
 import { IGenericResponse } from '../../../interfaces/common';
