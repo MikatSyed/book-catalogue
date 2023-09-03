@@ -28,7 +28,22 @@ const getALLOrderFromDB: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const getOrderByIdFromDB: RequestHandler = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req?.user?.userId;
+  const role = req?.user?.role;
+  const result = await OrderService.getOrderByIdFromDB(id, userId, role);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Order fetched successfully',
+    data: result,
+  });
+});
+
 export const OrderController = {
   postOrder,
   getALLOrderFromDB,
+  getOrderByIdFromDB,
 };
